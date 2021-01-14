@@ -1,0 +1,17 @@
+{
+    "name": "OotO_MusicReplacementMod",
+    "version": "1.0.0",
+    "description": "",
+    "main": "OotO_MusicReplacementMod.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "core": "*",
+    "compression": "zip",
+    "modloader64_deps": {
+        "Z64Lib": "https://github.com/hylian-modding/ML64-Z64Lib"
+    }
+}
