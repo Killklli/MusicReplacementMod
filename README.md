@@ -11,4 +11,4 @@ Simply add your MP3, OGG or WAV files inside and make sure they are named as fol
 
 - `loop` represents if the audio file should loop. Set it to `noloop` if you don't want the music to loop. Looping should be used for background music, while fanfares or ocarina songs should not be looping.
 
-- `.mp3` Is the file extension of your audio file and can be different. You shouldn't touch it at all when renaming your file.
+- `.mp3` is the file extension of your audio file and can be different. You shouldn't touch it at all when renaming your file.
