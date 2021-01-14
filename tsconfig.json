@@ -19,8 +19,8 @@
       "@dolphin/*": [
         "./build/dolphin/*"
       ],
-      "@OotO-VoiceTemplate/*": [
-        "./src/OotO-VoiceTemplate/*"
+      "@OotO-MusicReplacementMod/*": [
+        "./src/OotO-MusicReplacementMod/*"
       ],
       "Z64Lib/*": [
         "libs\\Z64Lib/*"

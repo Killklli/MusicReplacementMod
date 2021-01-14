@@ -1,25 +1,25 @@
 {
-    "name": "OotO-MusicReplacementMod",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/hylian-modding/MusicReplacementMod.git"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/hylian-modding/MusicReplacementMod/issues"
-    },
-    "homepage": "https://github.com/hylian-modding/MusicReplacementMod#readme",
-    "modloader64_deps": {
-        "Z64Lib": "https://github.com/hylian-modding/ML64-Z64Lib"
-    },
-    "dependencies": {},
-    "devDependencies": {}
+  "name": "OotO-MusicReplacementMod",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hylian-modding/MusicReplacementMod.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hylian-modding/MusicReplacementMod/issues"
+  },
+  "homepage": "https://github.com/hylian-modding/MusicReplacementMod#readme",
+  "modloader64_deps": {
+    "Z64Lib": "https://github.com/hylian-modding/ML64-Z64Lib"
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }
