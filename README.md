@@ -1,6 +1,6 @@
 # Music Replacement Mod (OoT)
 
-This mod allows musics in Ocarina of Time to be replaced by external audio files. (Like .MP3 or .OGG)
+This mod allows music in Ocarina of Time to be replaced with external audio files. (Like .MP3 or .OGG)
 
 ## Usage
 
