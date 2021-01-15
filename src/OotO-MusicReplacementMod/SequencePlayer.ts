@@ -1,5 +1,3 @@
-
-import { JSONTemplate } from "modloader64_api/JSONTemplate";
 import IMemory from "modloader64_api/IMemory";
 import * as sf from 'modloader64_api/Sound/sfml_audio';
 
@@ -30,5 +28,9 @@ export class SequencePlayer {
 
     get is_og_playing(): boolean {
         return this.emulator.rdramReadBit8(this.base_address, 0);
+    }
+
+    get is_muted(): boolean {
+        return this.emulator.rdramReadBit8(this.base_address, 1);
     }
 }

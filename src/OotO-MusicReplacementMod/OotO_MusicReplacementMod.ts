@@ -4,7 +4,6 @@ import { InjectCore } from 'modloader64_api/CoreInjection';
 import path from 'path';
 import fs from 'fs-extra';
 import { SequencePlayer } from './SequencePlayer';
-import { Z64RomTools } from 'Z64Lib/API/Z64RomTools';
 
 class OotO_MusicReplacementMod implements IPlugin {
 
@@ -13,8 +12,6 @@ class OotO_MusicReplacementMod implements IPlugin {
     core!: IOOTCore;
 
     is_out_of_title!: number;
-
-    tools!: Z64RomTools;
 
     sequencePlayers!: SequencePlayer[];
 
@@ -37,7 +34,7 @@ class OotO_MusicReplacementMod implements IPlugin {
         this.ModLoader.emulator.rdramWriteBuffer(0x801139D4, Buffer.alloc(0xB8));
 
         this.sequencePlayers.forEach(player => {
-            if (player.last_music_id === player.music_id && player.music_id !== 0x00 && player.is_og_playing) {
+            if (player.last_music_id === player.music_id && player.music_id !== 0x00) {
                 // Set volume
                 if ((player.volume_og * 100) < 100) {
                     player.music.volume = player.volume_og * 100;
@@ -45,9 +42,11 @@ class OotO_MusicReplacementMod implements IPlugin {
 
                 // Decrease volume if paused
                 if (this.core.helper.isPaused()) {
-                    if ((player.volume_og * 100) < 100) {
-                        player.music.volume = (player.volume_og * 100) / 3;
-                    }
+                    player.music.volume /= 3;
+                }
+
+                if (player.volume_og < 0.1 || player.is_muted) {
+                    player.music.volume = 0;
                 }
             }
 
@@ -77,7 +76,7 @@ class OotO_MusicReplacementMod implements IPlugin {
                     if (id == player.music_id) {
                         player.music = this.ModLoader.sound.loadMusic(f);
 
-                        if (path.parse(file).name.split('-')[1].trim() == "loop") {
+                        if (path.parse(file).name.split('-')[1].trim() === "loop") {
                             player.music.loop = true;
                         }
 
