@@ -69,9 +69,9 @@ class OotO_MusicReplacementMod implements IPlugin {
                     player.last_music_id = 0;
                 }
 
-                let sound_folder: string = path.resolve(__dirname, "music");
-                fs.readdirSync(sound_folder).forEach((file: string) => {
-                    let f: string = path.resolve(sound_folder, file);
+                let music_folder: string = path.resolve("./mods/music");
+                fs.readdirSync(music_folder).forEach((file: string) => {
+                    let f: string = path.resolve(music_folder, file);
                     let id: number = parseInt(path.parse(file).name.split('-')[0].trim(), 16);
                     if (id == player.music_id) {
                         player.music = this.ModLoader.sound.loadMusic(f);
