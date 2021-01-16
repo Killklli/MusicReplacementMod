@@ -31,7 +31,7 @@ class OotO_MusicReplacementMod implements IPlugin {
 
     onTick(frame?: number | undefined): void {
         // Mute OG music
-        this.ModLoader.emulator.rdramWriteBuffer(0x801139D4, Buffer.alloc(0xB8));
+        this.ModLoader.emulator.rdramWriteBuffer(0x801139B2, Buffer.alloc(0xD8));
 
         this.sequencePlayers.forEach(player => {
             if (player.last_music_id === player.music_id && player.music_id !== 0x00) {
