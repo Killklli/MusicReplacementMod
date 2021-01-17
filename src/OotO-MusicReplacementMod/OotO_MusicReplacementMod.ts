@@ -45,7 +45,7 @@ class OotO_MusicReplacementMod implements IPlugin {
                     player.music.volume /= 3;
                 }
 
-                if (player.volume_og < 0.1 || player.is_muted) {
+                if (player.is_muted) {
                     player.music.volume = 0;
                 }
             }
