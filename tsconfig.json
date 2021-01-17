@@ -21,9 +21,6 @@
       ],
       "@OotO-MusicReplacementMod/*": [
         "./src/OotO-MusicReplacementMod/*"
-      ],
-      "Z64Lib/*": [
-        "libs\\Z64Lib/*"
       ]
     }
   },
