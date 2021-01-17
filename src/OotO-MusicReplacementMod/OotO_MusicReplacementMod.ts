@@ -27,15 +27,20 @@ class OotO_MusicReplacementMod implements IPlugin {
         this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128CC0));
         this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128E20));
         this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128F80));
+
+        // Mute OG music
+        this.ModLoader.utils.setTimeoutFrames(() => {
+            this.ModLoader.emulator.rdramWriteBuffer(0x801139B2, Buffer.alloc(0xD8));
+        }, 1);
     }
 
     onTick(frame?: number | undefined): void {
-        // Mute OG music
-        this.ModLoader.emulator.rdramWriteBuffer(0x801139B2, Buffer.alloc(0xD8));
-
         this.sequencePlayers.forEach(player => {
             if (player.last_music_id === player.music_id && player.music_id !== 0x00) {
-                // Set volume
+                if (player.loop_start !== undefined) {
+                    player.SetLoopTimes(player.loop_start, player.loop_end);
+                }
+
                 if ((player.volume_og * 100) < 100) {
                     player.music.volume = player.volume_og * 100;
                 }
@@ -50,17 +55,6 @@ class OotO_MusicReplacementMod implements IPlugin {
                 }
             }
 
-            // Mute music if just went out of title screen
-            if (this.core.helper.isSceneNumberValid() && this.is_out_of_title < 4) {
-                this.is_out_of_title += 1;
-
-                if (player.music !== undefined) {
-                    player.music.volume = 0;
-                }
-            } else if (!this.core.helper.isSceneNumberValid()) {
-                this.is_out_of_title = 0;
-            }
-
             // Play new music
             if ((player.last_music_id !== player.music_id || player.time <= 0x0A) && player.is_og_playing === true && player.music_id !== 0x00) {
                 if (player.music !== undefined) {
@@ -71,13 +65,22 @@ class OotO_MusicReplacementMod implements IPlugin {
 
                 let music_folder: string = path.resolve("./mods/music");
                 fs.readdirSync(music_folder).forEach((file: string) => {
+                    let fileSplits: string[] = path.parse(file).name.split('-');
                     let f: string = path.resolve(music_folder, file);
-                    let id: number = parseInt(path.parse(file).name.split('-')[0].trim(), 16);
+                    let id: number = parseInt(fileSplits[0].trim(), 16);
                     if (id == player.music_id) {
                         player.music = this.ModLoader.sound.loadMusic(f);
 
-                        if (path.parse(file).name.split('-')[1].trim() === "loop") {
-                            player.music.loop = true;
+                        if (fileSplits.length > 1) {
+                            if (fileSplits[1].trim() === "loop") {
+                                player.music.loop = true;
+
+                                if (fileSplits.length === 4) {
+                                    player.loop_start = parseFloat(fileSplits[2].trim());
+                                    player.loop_end = parseFloat(fileSplits[3].trim());
+                                    player.SetLoopTimes(player.loop_start, player.loop_end);
+                                }
+                            }
                         }
 
                         player.music.play();

@@ -1,5 +1,10 @@
 import IMemory from "modloader64_api/IMemory";
-import * as sf from 'modloader64_api/Sound/sfml_audio';
+import { Music } from 'modloader64_api/Sound/sfml_audio';
+
+export class TimeSpan {
+    offset!: number;
+    length!: number;
+}
 
 export class SequencePlayer {
     private emulator: IMemory;
@@ -7,7 +12,11 @@ export class SequencePlayer {
     private base_address: number;
 
     public last_music_id!: number;
-    public music!: sf.Music;
+    public music!: Music;
+    public timeSpan!: TimeSpan;
+
+    public loop_start!: number;
+    public loop_end!: number;
 
     constructor(emu: IMemory, base_address: number) {
         this.emulator = emu;
@@ -28,6 +37,13 @@ export class SequencePlayer {
 
     get is_og_playing(): boolean {
         return this.emulator.rdramReadBit8(this.base_address, 0);
+    }
+
+    SetLoopTimes(start: number, end: number): void {
+        this.timeSpan = new TimeSpan();
+        this.timeSpan.offset = start;
+        this.timeSpan.length = end - start;
+        this.music.loopPoints = this.timeSpan;
     }
 
     get is_muted(): boolean {
