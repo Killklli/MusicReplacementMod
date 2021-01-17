@@ -6,3 +6,4 @@ cores/
 libs/
 modloader64-config.json
 src/OotO-MusicReplacementMod/music/*
+.vs/
