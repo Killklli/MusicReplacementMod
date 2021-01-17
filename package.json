@@ -1,23 +1,23 @@
 {
-  "name": "OotO-MusicReplacementMod",
-  "version": "1.0.0",
-  "description": "This mod allows music in Ocarina of Time to be replaced with external audio files. (Like .MP3 or .OGG)",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hylian-modding/MusicReplacementMod.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/hylian-modding/MusicReplacementMod/issues"
-  },
-  "homepage": "https://github.com/hylian-modding/MusicReplacementMod#readme",
-  "modloader64_deps": {},
-  "dependencies": {},
-  "devDependencies": {}
+    "name": "OoT-MusicReplacementMod",
+    "version": "1.0.0",
+    "description": "This mod allows music in Ocarina of Time to be replaced with external audio files. (Like .MP3 or .OGG)",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hylian-modding/MusicReplacementMod.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/hylian-modding/MusicReplacementMod/issues"
+    },
+    "homepage": "https://github.com/hylian-modding/MusicReplacementMod#readme",
+    "modloader64_deps": {},
+    "dependencies": {},
+    "devDependencies": {}
 }

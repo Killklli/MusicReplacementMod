@@ -5,7 +5,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { SequencePlayer } from './SequencePlayer';
 
-class OotO_MusicReplacementMod implements IPlugin {
+class OoT_MusicReplacementMod implements IPlugin {
 
     ModLoader!: IModLoaderAPI;
     @InjectCore()
@@ -92,4 +92,4 @@ class OotO_MusicReplacementMod implements IPlugin {
     }
 }
 
-module.exports = OotO_MusicReplacementMod;
+module.exports = OoT_MusicReplacementMod;

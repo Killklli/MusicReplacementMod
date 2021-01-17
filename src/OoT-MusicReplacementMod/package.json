@@ -1,0 +1,15 @@
+{
+    "name": "OoT_MusicReplacementMod",
+    "version": "1.0.0",
+    "description": "",
+    "main": "OoT_MusicReplacementMod.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "MelonSpeedruns",
+    "credits": "Asra, Willeyd and Jam for testing!",
+    "license": "ISC",
+    "core": "OcarinaofTime",
+    "modloader64_deps": {}
+}

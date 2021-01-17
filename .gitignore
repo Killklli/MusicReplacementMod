@@ -5,5 +5,5 @@ external_cores/
 cores/
 libs/
 modloader64-config.json
-src/OotO-MusicReplacementMod/music/*
+src/OoT-MusicReplacementMod/music/*
 .vs/

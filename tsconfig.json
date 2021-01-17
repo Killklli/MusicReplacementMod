@@ -19,8 +19,8 @@
       "@dolphin/*": [
         "./build/dolphin/*"
       ],
-      "@OotO-MusicReplacementMod/*": [
-        "./src/OotO-MusicReplacementMod/*"
+      "@OoT-MusicReplacementMod/*": [
+        "./src/OoT-MusicReplacementMod/*"
       ]
     }
   },
