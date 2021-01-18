@@ -28,10 +28,6 @@ export class SequencePlayer {
         return this.emulator.rdramRead8(this.base_address + 0x04);
     }
 
-    get time(): number {
-        return this.emulator.rdramRead16(this.base_address + 0xE2);
-    }
-
     get volume_og(): number {
         return this.emulator.rdramReadF32(this.base_address + 0x1C) * this.emulator.rdramReadF32(this.base_address + 0x2C);
     }
@@ -40,14 +36,14 @@ export class SequencePlayer {
         return this.emulator.rdramReadBit8(this.base_address, 0);
     }
 
+    get is_muted(): boolean {
+        return this.emulator.rdramReadBit8(this.base_address, 1);
+    }
+
     SetLoopTimes(start: number, end: number): void {
         this.timeSpan = new TimeSpan();
         this.timeSpan.offset = start;
         this.timeSpan.length = end - start;
         this.music.loopPoints = this.timeSpan;
-    }
-
-    get is_muted(): boolean {
-        return this.emulator.rdramReadBit8(this.base_address, 1);
     }
 }
