@@ -11,6 +11,7 @@ export class SequencePlayer {
 
     private base_address: number;
 
+    public last_music_playing!: boolean;
     public last_music_id!: number;
     public music!: Music;
     public timeSpan!: TimeSpan;

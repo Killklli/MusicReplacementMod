@@ -36,7 +36,7 @@ class OoT_MusicReplacementMod implements IPlugin {
 
     onTick(frame?: number | undefined): void {
         this.sequencePlayers.forEach(player => {
-            if (player.last_music_id === player.music_id && player.music_id !== 0x00) {
+            if (player.is_og_playing && player.music !== undefined) {
                 if (player.loop_start !== undefined) {
                     player.SetLoopTimes(player.loop_start, player.loop_end);
                 }
@@ -56,7 +56,7 @@ class OoT_MusicReplacementMod implements IPlugin {
             }
 
             // Play new music
-            if ((player.last_music_id !== player.music_id || player.time <= 0x0A) && player.is_og_playing === true && player.music_id !== 0x00) {
+            if (!player.last_music_playing && player.is_og_playing) {
                 if (player.music !== undefined) {
                     player.music.stop();
                     player.music.release();
@@ -88,6 +88,8 @@ class OoT_MusicReplacementMod implements IPlugin {
                     }
                 });
             }
+
+            player.last_music_playing = player.is_og_playing;
         });
     }
 }
