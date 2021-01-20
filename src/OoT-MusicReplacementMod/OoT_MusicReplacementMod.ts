@@ -1,9 +1,9 @@
 import { IPlugin, IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
-import { IOOTCore } from 'modloader64_api/OOT/OOTAPI';
 import { InjectCore } from 'modloader64_api/CoreInjection';
 import path from 'path';
 import fs from 'fs-extra';
 import { SequencePlayer } from './SequencePlayer';
+import { IOOTCore } from 'modloader64_api/OOT/OOTAPI';
 
 class OoT_MusicReplacementMod implements IPlugin {
 
@@ -23,30 +23,64 @@ class OoT_MusicReplacementMod implements IPlugin {
 
     postinit(): void {
         // Create emulated sequence players
-        this.sequencePlayers = new Array<SequencePlayer>(4);
+        this.sequencePlayers = new Array<SequencePlayer>(3);
         this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128B60));
         this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128CC0));
-        this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128E20));
+        //this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128E20));
         this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128F80));
 
         // Mute OG music
-        this.ModLoader.utils.setTimeoutFrames(() => {
-            this.ModLoader.emulator.rdramWriteBuffer(0x80113B90, Buffer.alloc(0x10 * 0x6B));
-        }, 1);
+    }
+
+    searchRecursive(dir: string): Array<string> {
+        // This is where we store pattern matches of all files inside the directory
+        let results = new Array<string>();
+
+        // Read contents of directory
+        fs.readdirSync(dir).forEach((dirInner) => {
+            // Obtain absolute path
+            dirInner = path.resolve(dir, dirInner);
+
+            // Get stats to determine if path is a directory or a file
+            var stat = fs.statSync(dirInner);
+
+            // If path is a directory, scan it and combine results
+            if (stat.isDirectory()) {
+                results = results.concat(this.searchRecursive(dirInner));
+            }
+
+            // If path is a file and ends with pattern then push it onto results
+            if (stat.isFile()) {
+                results.push(dirInner);
+            }
+        });
+
+        return results;
     }
 
     onTick(frame?: number | undefined): void {
+        // Mute OG music
+        if (!this.core.helper.isSceneNumberValid()) {
+            let music_start = this.ModLoader.emulator.rdramRead32(0x80113B80 + 0x20);
+            let music_length = this.ModLoader.emulator.rdramRead32(0x80113B80 + 0x24);
+
+            for (let i = 1; i <= 0x6C; i++) {
+                this.ModLoader.emulator.rdramWrite32(0x80113B80 + (i * 0x10), music_start);
+                this.ModLoader.emulator.rdramWrite32(0x80113B80 + (i * 0x10) + 4, music_length);
+            }
+        }
+
         this.sequencePlayers.forEach(player => {
 
             // Only change volume if the OG song is actually playing
-            if (player.is_og_playing && player.music !== undefined) {
+            if (player.music !== undefined && player.last_music_playing && player.last_music_id === player.music_id) {
                 // Set volume to the same as in-game
-                if ((player.volume_og * 100) < 100) {
-                    player.music.volume = player.volume_og * 100;
+                if ((player.volume_og * 100) <= 100) {
+                    player.music.volume = (player.volume_og * 100);
                 }
 
                 // Decrease volume if paused
-                if (this.core.helper.isPaused()) {
+                if (player.is_paused) {
                     player.music.volume /= 3;
                 }
 
@@ -61,18 +95,18 @@ class OoT_MusicReplacementMod implements IPlugin {
                 if (player.music !== undefined) {
                     player.music.stop();
                     player.music.release();
-                    player.last_music_id = 0;
                 }
 
-                // Search through music folder for proper music files
-                let music_folder: string = path.resolve("./mods/music");
-                fs.readdirSync(music_folder).forEach((file: string) => {
+                // Search through the mods folder for proper music files
+                let music_folder: string = path.resolve("./mods");
+
+                this.searchRecursive(music_folder).forEach((file: string) => {
                     let fileSplits: string[] = path.parse(file).name.split('-');
                     let f: string = path.resolve(music_folder, file);
                     let id: number = parseInt(fileSplits[0].trim(), 16);
 
                     // Check for file arguments in the file name
-                    if (id == player.music_id) {
+                    if (id === player.music_id) {
                         player.music = this.ModLoader.sound.loadMusic(f);
 
                         if (fileSplits.length > 1) {
@@ -88,11 +122,16 @@ class OoT_MusicReplacementMod implements IPlugin {
                         }
 
                         player.music.play();
-                        player.last_music_id = id;
+
+                        player.last_music_id = player.music_id;
+                        player.last_music_playing = player.is_og_playing;
+
+                        return;
                     }
                 });
             }
 
+            player.last_music_id = player.music_id;
             player.last_music_playing = player.is_og_playing;
         });
     }

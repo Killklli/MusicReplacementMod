@@ -1,7 +1,7 @@
 {
     "name": "OoT_MusicReplacementMod",
     "version": "1.0.0",
-    "description": "",
+    "description": "This mod allows music in Ocarina of Time to be replaced with external audio files.",
     "main": "OoT_MusicReplacementMod.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"

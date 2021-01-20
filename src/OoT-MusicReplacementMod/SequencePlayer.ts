@@ -40,6 +40,10 @@ export class SequencePlayer {
         return this.emulator.rdramReadBit8(this.base_address, 1);
     }
 
+    get is_paused(): boolean {
+        return this.emulator.rdramReadBit8(this.base_address, 2);
+    }
+
     SetLoopTimes(start: number, end: number): void {
         this.timeSpan = new TimeSpan();
         this.timeSpan.offset = start;
