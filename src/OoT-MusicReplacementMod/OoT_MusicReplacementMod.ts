@@ -31,7 +31,7 @@ class OoT_MusicReplacementMod implements IPlugin {
 
         //Mute OG Music
         this.ModLoader.utils.setIntervalFrames(() => {
-            for (let i = 0x0; i < 0x26; i++) {
+            for (let i = 0x3; i < 0x26; i++) {
                 this.ModLoader.emulator.rdramWrite32(0x80113750 + (i * 0x10), 0xFFFFFFFF);
             }
         }, 10);
