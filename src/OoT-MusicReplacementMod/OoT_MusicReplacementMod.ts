@@ -78,9 +78,9 @@ class OoT_MusicReplacementMod implements IPlugin {
                 }
 
                 // Mute music if OG is muted too
-                if (player.is_muted) {
+                /*if (player.is_muted) {
                     player.music.volume = 0;
-                }
+                }*/
             }
 
             // Play new music
