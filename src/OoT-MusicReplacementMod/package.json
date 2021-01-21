@@ -1,15 +1,16 @@
 {
-    "name": "OoT_MusicReplacementMod",
-    "version": "1.0.0",
-    "description": "This mod allows music in Ocarina of Time to be replaced with external audio files.",
-    "main": "OoT_MusicReplacementMod.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "keywords": [],
-    "author": "MelonSpeedruns",
-    "credits": "Asra, Willeyd and Jam for testing!",
-    "license": "ISC",
-    "core": "OcarinaofTime",
-    "modloader64_deps": {}
+  "name": "OoT_MusicReplacementMod",
+  "version": "1.0.0",
+  "description": "This mod allows music in Ocarina of Time to be replaced with external audio files.",
+  "main": "OoT_MusicReplacementMod.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "MelonSpeedruns",
+  "credits": "Asra, Willeyd and Jam for testing!",
+  "license": "ISC",
+  "core": "OcarinaofTime",
+  "modloader64_deps": {
+  }
 }

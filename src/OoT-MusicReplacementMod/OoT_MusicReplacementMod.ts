@@ -29,7 +29,12 @@ class OoT_MusicReplacementMod implements IPlugin {
         //this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128E20));
         this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128F80));
 
-        // Mute OG music
+        //Mute OG Music
+        this.ModLoader.utils.setIntervalFrames(() => {
+            for (let i = 0x0; i < 0x26; i++) {
+                this.ModLoader.emulator.rdramWrite32(0x80113750 + (i * 0x10), 0xFFFFFFFF);
+            }
+        }, 10);
     }
 
     searchRecursive(dir: string): Array<string> {
@@ -59,19 +64,7 @@ class OoT_MusicReplacementMod implements IPlugin {
     }
 
     onTick(frame?: number | undefined): void {
-        // Mute OG music
-        if (!this.core.helper.isSceneNumberValid()) {
-            let music_start = this.ModLoader.emulator.rdramRead32(0x80113B80 + 0x20);
-            let music_length = this.ModLoader.emulator.rdramRead32(0x80113B80 + 0x24);
-
-            for (let i = 1; i <= 0x6C; i++) {
-                this.ModLoader.emulator.rdramWrite32(0x80113B80 + (i * 0x10), music_start);
-                this.ModLoader.emulator.rdramWrite32(0x80113B80 + (i * 0x10) + 4, music_length);
-            }
-        }
-
         this.sequencePlayers.forEach(player => {
-
             // Only change volume if the OG song is actually playing
             if (player.music !== undefined && player.last_music_playing && player.last_music_id === player.music_id) {
                 // Set volume to the same as in-game
@@ -121,6 +114,7 @@ class OoT_MusicReplacementMod implements IPlugin {
                             }
                         }
 
+                        player.music.volume = player.volume_og;
                         player.music.play();
 
                         player.last_music_id = player.music_id;
