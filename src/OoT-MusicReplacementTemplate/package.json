@@ -1,0 +1,16 @@
+{
+    "name": "OoT_MusicReplacementTemplate",
+    "version": "1.0.0",
+    "description": "",
+    "main": "OoT_MusicReplacementTemplate.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "credits": "",
+    "license": "ISC",
+    "core": "OcarinaofTime",
+    "modloader64_deps": {}
+  }
+  

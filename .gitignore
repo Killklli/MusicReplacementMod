@@ -7,3 +7,4 @@ libs/
 modloader64-config.json
 src/OoT-MusicReplacementMod/music/*
 .vs/
+/music

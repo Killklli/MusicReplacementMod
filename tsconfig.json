@@ -16,9 +16,6 @@
       "@sound/*": [
         "./build/emulator/*"
       ],
-      "@dolphin/*": [
-        "./build/dolphin/*"
-      ],
       "@OoT-MusicReplacementMod/*": [
         "./src/OoT-MusicReplacementMod/*"
       ]

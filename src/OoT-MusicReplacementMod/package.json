@@ -11,6 +11,5 @@
   "credits": "Asra, Willeyd and Jam for testing!",
   "license": "ISC",
   "core": "OcarinaofTime",
-  "modloader64_deps": {
-  }
+  "modloader64_deps": {}
 }

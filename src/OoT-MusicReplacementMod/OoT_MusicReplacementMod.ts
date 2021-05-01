@@ -4,21 +4,38 @@ import path from 'path';
 import fs from 'fs-extra';
 import { SequencePlayer } from './SequencePlayer';
 import { IOOTCore } from 'modloader64_api/OOT/OOTAPI';
+import { EventHandler } from 'modloader64_api/EventHandler';
+import { MusicReplacementEvents, MusicReplacementTrack } from './MusicReplacementAPI';
 
 class OoT_MusicReplacementMod implements IPlugin {
 
     ModLoader!: IModLoaderAPI;
     @InjectCore()
     core!: IOOTCore;
-
     is_out_of_title!: number;
-
     sequencePlayers!: SequencePlayer[];
+    cache: Map<string, Buffer> = new Map<string, Buffer>();
 
     preinit(): void {
+        if (!fs.existsSync("./music")) {
+            fs.mkdirSync("./music");
+        }
+    }
+
+    @EventHandler(MusicReplacementEvents.LOAD_TRACK)
+    onTrack(track: MusicReplacementTrack) {
+        this.ModLoader.logger.info("Caching music track from API: " + track.name + ".");
+        this.cache.set(track.name, track.content);
     }
 
     init(): void {
+        let music_folder: string = path.resolve(global.ModLoader.startdir, "music");
+        this.searchRecursive(music_folder).forEach((file: string) => {
+            this.ModLoader.logger.info("Caching music track from folder: " + file + ".");
+            let buf: Buffer = fs.readFileSync(file);
+            let name: string = path.parse(file).name;
+            this.cache.set(name, buf);
+        });
     }
 
     postinit(): void {
@@ -90,17 +107,13 @@ class OoT_MusicReplacementMod implements IPlugin {
                     player.music.release();
                 }
 
-                // Search through the mods folder for proper music files
-                let music_folder: string = path.resolve("./mods");
-
-                this.searchRecursive(music_folder).forEach((file: string) => {
+                this.cache.forEach((buf: Buffer, file: string) => {
                     let fileSplits: string[] = path.parse(file).name.split('-');
-                    let f: string = path.resolve(music_folder, file);
                     let id: number = parseInt(fileSplits[0].trim(), 16);
 
                     // Check for file arguments in the file name
                     if (id === player.music_id) {
-                        player.music = this.ModLoader.sound.loadMusic(f);
+                        player.music = this.ModLoader.sound.initMusic(buf);
 
                         if (fileSplits.length > 1) {
                             if (fileSplits[1].trim() === "loop") {
@@ -114,7 +127,8 @@ class OoT_MusicReplacementMod implements IPlugin {
                             }
                         }
 
-                        player.music.volume = player.volume_og;
+                        let vol = (global.ModLoader["GLOBAL_VOLUME"] as number) >= player.volume_og ? player.volume_og : global.ModLoader["GLOBAL_VOLUME"] as number;
+                        player.music.volume = vol;
                         player.music.play();
 
                         player.last_music_id = player.music_id;
