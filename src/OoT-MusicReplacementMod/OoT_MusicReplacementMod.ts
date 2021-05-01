@@ -24,13 +24,14 @@ class OoT_MusicReplacementMod implements IPlugin {
 
     @EventHandler(MusicReplacementEvents.LOAD_TRACK)
     onTrack(track: MusicReplacementTrack) {
+        this.ModLoader.logger.info("Caching music track from API: " + track.name + ".");
         this.cache.set(track.name, track.content);
     }
 
     init(): void {
         let music_folder: string = path.resolve(global.ModLoader.startdir, "music");
         this.searchRecursive(music_folder).forEach((file: string) => {
-            this.ModLoader.logger.info("Caching music track: " + file + ".");
+            this.ModLoader.logger.info("Caching music track from folder: " + file + ".");
             let buf: Buffer = fs.readFileSync(file);
             let name: string = path.parse(file).name;
             this.cache.set(name, buf);
