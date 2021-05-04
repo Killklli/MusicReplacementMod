@@ -2,6 +2,7 @@ import { IModLoaderAPI, IPlugin } from "modloader64_api/IModLoaderAPI";
 import path from 'path';
 import fs from 'fs-extra';
 import { MusicReplacementEvents, MusicReplacementTrack } from "./MusicReplacementAPI";
+import { bus } from "modloader64_api/EventHandler";
 
 class OoT_MusicReplacementTemplate implements IPlugin {
 
@@ -37,7 +38,7 @@ class OoT_MusicReplacementTemplate implements IPlugin {
 
     preinit(): void {
         this.searchRecursive(path.resolve(__dirname, "music")).forEach((file: string) => {
-            this.ModLoader.publicBus.emit(MusicReplacementEvents.LOAD_TRACK, new MusicReplacementTrack(path.parse(file).name, fs.readFileSync(file)));
+            bus.emit(MusicReplacementEvents.LOAD_TRACK, new MusicReplacementTrack(path.parse(file).name, fs.readFileSync(file)));
         });
     }
 
