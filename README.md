@@ -1,11 +1,10 @@
 # Music Replacement Mod (OoT)
 
-This mod allows music in Ocarina of Time to be replaced with external audio files. (Like .OGG)
+This mod allows some music in Ocarina of Time to be replaced with external audio files.
 
 ## Usage
 
-Put the mod's zip file in your `mods` folder. **DO NOT extract it!**
-Next to the zip file, create a folder named `music`.
+Place the pak file in your `mods` folder and enable the mod in the launcher. On first launch it will create a `music` folder at `./ModLoader/music`.
 
 Simply add your OGG, FLAC or WAV files inside the `music` folder and make sure they are named as follows:
 `1A-loop.ogg`
