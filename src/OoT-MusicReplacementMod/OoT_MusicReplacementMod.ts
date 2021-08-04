@@ -9,6 +9,10 @@ import { MusicReplacementEvents, MusicReplacementTrack } from './MusicReplacemen
 import { onViUpdate } from "modloader64_api/PluginLifecycle";
 import { Font } from "modloader64_api/Sylvain/Gfx";
 
+interface OoTMusicReplacement_Config {
+    current_option: string;
+}
+
 class OoT_MusicReplacementMod implements IPlugin {
 
     ModLoader!: IModLoaderAPI;
@@ -18,20 +22,21 @@ class OoT_MusicReplacementMod implements IPlugin {
     is_out_of_title!: number;
     force_replay!: boolean;
     sequencePlayers!: SequencePlayer[];
-    current_option!: string;
+    config!: OoTMusicReplacement_Config;
     music_folder!: string;
     cache: Map<string, Buffer> = new Map<string, Buffer>();
     packs: Array<string> = new Array<string>();
-    bgm: Array<string> = ["02", "18", "19", "1A", "1B", "1C", "1D", "1E", 
-    "1F", "26", "27", "28", "29", "2A", "2C", "2D", "2E",
-    "2F", "30", "38", "3A", "3C", "3E", "3F", "40", "42", 
-    "4A", "4B", "4C", "4D", "4E", "4F", "50", "54", "55", 
-    "56", "57", "58", "5A", "5B", "5C", "5F", "60", "61", 
-    "62", "63", "64", "65", "67", "68", "69", "6A", "6B", 
-    "6C", "51", "52", "66"];
+    // Create arrays for checking if we already have audio assigned to sections
+    bgm: Array<string> = ["02", "18", "19", "1A", "1B", "1C", "1D", "1E",
+        "1F", "26", "27", "28", "29", "2A", "2C", "2D", "2E",
+        "2F", "30", "38", "3A", "3C", "3E", "3F", "40", "42",
+        "4A", "4B", "4C", "4D", "4E", "4F", "50", "54", "55",
+        "56", "57", "58", "5A", "5B", "5C", "5F", "60", "61",
+        "62", "63", "64", "65", "67", "68", "69", "6A", "6B",
+        "6C", "51", "52", "66"];
     fanfares: Array<string> = ["20", "21", "22", "23", "24", "25", "2B",
-    "32", "33", "34", "35", "36", "37", "39", "3B", "3D", 
-    "41", "43", "53", "59", "5E"]
+        "32", "33", "34", "35", "36", "37", "39", "3B", "3D",
+        "41", "43", "53", "59", "5E"]
 
     preinit(): void {
         if (!fs.existsSync("./music")) {
@@ -55,10 +60,17 @@ class OoT_MusicReplacementMod implements IPlugin {
     }
 
     init(): void {
-        this.current_option = "OoT_MusicReplacementMod-Randomize";
+        this.config = this.ModLoader.config.registerConfigCategory("OoT_MusicReplacementMod") as OoTMusicReplacement_Config;
+        this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", false);
         this.music_folder = path.resolve(global.ModLoader.startdir, "music");
         this.packs = this.find_pack_names(this.music_folder + "/packs/");
-        this.load_random_music()
+        // If we have a pack already set, load that as the default rather than rando
+        if (this.config.current_option !== "OoT_MusicReplacementMod-Randomize") {
+            this.load_pack_folder(this.config.current_option);
+        }
+        else {
+            this.load_random_music();
+        }
     }
 
     postinit(): void {
@@ -77,43 +89,44 @@ class OoT_MusicReplacementMod implements IPlugin {
         }, 10);
     }
 
-
-    get_random_item(current, array){
-        var random = array[Math.floor(Math.random()*array.length)]
-        if(!current.includes(random)){
+    get_random_item(current: Array<string>, array: Array<string>): string {
+        // Randomly get an id from the array passed.
+        var random = array[Math.floor(Math.random() * array.length)]
+        if (!current.includes(random)) {
             return random;
         }
-        else
-        {
+        else {
             return this.get_random_item(current, array);
         }
     }
-    shuffle(array) {
-        var currentIndex = array.length,  randomIndex;
-      
+
+    shuffle(array: Array<string>) {
+        var currentIndex = array.length, randomIndex;
+
         // While there remain elements to shuffle...
         while (0 !== currentIndex) {
-      
-          // Pick a remaining element...
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex--;
-      
-          // And swap it with the current element.
-          [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
         }
-      
+
         return array;
-      }
+    }
 
 
-      load_random_music() {
+    load_random_music() {
         this.cache = new Map<string, Buffer>();
         var bgm_files = Array<string>();
         var fanfare_files = Array<string>();
         var picked_bgm = Array<string>();
         var picked_fanfare = Array<string>();
 
+        // Search our bgm and fanfare folders for files
         this.searchRecursive(this.music_folder + "/bgm/").forEach((file: string) => {
             this.ModLoader.logger.info("Finding BGM Songs: " + file + ".");
             bgm_files.push(file);
@@ -123,14 +136,13 @@ class OoT_MusicReplacementMod implements IPlugin {
             fanfare_files.push(file);
         });
 
-        if (bgm_files.length > 0)
-        {
+        // If we have any set of files found cache them into their cache in their own position
+        if (bgm_files.length > 0) {
             this.shuffle(bgm_files).every(file => {
-                if (picked_bgm.length === this.bgm.length){
+                if (picked_bgm.length === this.bgm.length) {
                     return false;
                 }
-                else
-                {
+                else {
                     this.ModLoader.logger.info("Caching song: " + file + ".");
                     var random = this.get_random_item(picked_bgm, this.bgm);
                     picked_bgm.push(random);
@@ -140,14 +152,12 @@ class OoT_MusicReplacementMod implements IPlugin {
                 return true;
             });
         }
-        if (fanfare_files.length > 0)
-        {
+        if (fanfare_files.length > 0) {
             this.shuffle(fanfare_files).every(file => {
-                if (picked_fanfare.length === this.fanfares.length){
+                if (picked_fanfare.length === this.fanfares.length) {
                     return false;
                 }
-                else
-                {
+                else {
                     this.ModLoader.logger.info("Caching fanfare: " + file + ".");
                     var random = this.get_random_item(picked_fanfare, this.fanfares);
                     picked_fanfare.push(random)
@@ -158,7 +168,7 @@ class OoT_MusicReplacementMod implements IPlugin {
             });
         }
     }
-    
+
     load_pack_folder(dir: string) {
         this.cache = new Map<string, Buffer>();
         this.searchRecursive(dir).forEach((file: string) => {
@@ -243,10 +253,9 @@ class OoT_MusicReplacementMod implements IPlugin {
 
                 this.cache.forEach((buf: Buffer, file: string) => {
                     let update = false;
-                    if(this.current_option === "OoT_MusicReplacementMod-Randomize")
-                    {
+                    if (this.config.current_option === "OoT_MusicReplacementMod-Randomize") {
                         let id: number = parseInt(file.trim(), 16);
-                            
+
                         // Check for file arguments in the file name
                         if (id === player.music_id) {
                             player.music = this.ModLoader.sound.initMusic(buf);
@@ -256,11 +265,10 @@ class OoT_MusicReplacementMod implements IPlugin {
                             }
                         }
                     }
-                    else
-                    {
+                    else {
                         let fileSplits: string[] = path.parse(file).name.split('-');
                         let id: number = parseInt(fileSplits[0].trim(), 16);
-                            
+
                         // Check for file arguments in the file name
                         if (id === player.music_id) {
                             player.music = this.ModLoader.sound.initMusic(buf);
@@ -303,18 +311,20 @@ class OoT_MusicReplacementMod implements IPlugin {
                 if (this.ModLoader.ImGui.beginMenu("Music Replacement")) {
                     if (this.ModLoader.ImGui.beginMenu("Music Paks")) {
                         this.packs.forEach(pack_name => {
-                            if (this.ModLoader.ImGui.menuItem(path.basename(pack_name), undefined, ((this.current_option == path.basename(pack_name))? true:false))) {
-                                this.current_option = path.basename(pack_name);
+                            if (this.ModLoader.ImGui.menuItem(path.basename(pack_name), undefined, ((this.config.current_option == pack_name) ? true : false))) {
                                 this.load_pack_folder(pack_name);
                                 this.force_replay = true;
+                                this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", pack_name, true);
+                                this.ModLoader.config.save();
                             }
                         });
                         this.ModLoader.ImGui.endMenu();
                     }
-                    if (this.ModLoader.ImGui.menuItem("Randomize Music", undefined, ((this.current_option == "OoT_MusicReplacementMod-Randomize")? true:false))) {
-                        this.current_option = "OoT_MusicReplacementMod-Randomize";
-                        this.force_replay = true;
+                    if (this.ModLoader.ImGui.menuItem("Randomize Music", undefined, ((this.config.current_option == "OoT_MusicReplacementMod-Randomize") ? true : false))) {
                         this.load_random_music()
+                        this.force_replay = true;
+                        this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", true);
+                        this.ModLoader.config.save();
                     }
                     this.ModLoader.ImGui.endMenu();
                 }
