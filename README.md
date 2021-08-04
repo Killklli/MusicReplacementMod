@@ -8,13 +8,13 @@ Place the pak file in your `mods` folder and enable the mod in the launcher. On 
 
 Within that folder it will have `packs`, `bgm` and `fanfares`. 
 
-# BGM and Fanfares can accept any file name and when the random option is selected in the mods section, it will randomly pick from the files in the folder.
+### BGM and Fanfares can accept any file name and when the random option is selected in the mods section, it will randomly pick from the files in the folder.
 
 Eg: `./ModLoader/music/bgm/my-random-song.ogg`
 and
 `./ModLoader/music/bgm/random_fanfare.ogg`
 
-# Packs can be loaded in with specific songs tying to specific locations in game. (designated below)
+### Packs can be loaded in with specific songs tying to specific locations in game. (designated below)
 
 You can have multiple packs by naming the folders as
 
