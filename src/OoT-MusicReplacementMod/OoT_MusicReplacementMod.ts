@@ -6,19 +6,45 @@ import { SequencePlayer } from './SequencePlayer';
 import { IOOTCore } from 'modloader64_api/OOT/OOTAPI';
 import { EventHandler } from 'modloader64_api/EventHandler';
 import { MusicReplacementEvents, MusicReplacementTrack } from './MusicReplacementAPI';
+import { onViUpdate } from "modloader64_api/PluginLifecycle";
+import { Font } from "modloader64_api/Sylvain/Gfx";
 
 class OoT_MusicReplacementMod implements IPlugin {
 
     ModLoader!: IModLoaderAPI;
     @InjectCore()
     core!: IOOTCore;
+    font!: Font;
     is_out_of_title!: number;
+    force_replay!: boolean;
     sequencePlayers!: SequencePlayer[];
+    current_option!: string;
+    music_folder!: string;
     cache: Map<string, Buffer> = new Map<string, Buffer>();
+    packs: Array<string> = new Array<string>();
+    bgm: Array<string> = ["02", "18", "19", "1A", "1B", "1C", "1D", "1E", 
+    "1F", "26", "27", "28", "29", "2A", "2C", "2D", "2E",
+    "2F", "30", "38", "3A", "3C", "3E", "3F", "40", "42", 
+    "4A", "4B", "4C", "4D", "4E", "4F", "50", "54", "55", 
+    "56", "57", "58", "5A", "5B", "5C", "5F", "60", "61", 
+    "62", "63", "64", "65", "67", "68", "69", "6A", "6B", 
+    "6C", "51", "52", "66"];
+    fanfares: Array<string> = ["20", "21", "22", "23", "24", "25", "2B",
+    "32", "33", "34", "35", "36", "37", "39", "3B", "3D", 
+    "41", "43", "53", "59", "5E"]
 
     preinit(): void {
         if (!fs.existsSync("./music")) {
             fs.mkdirSync("./music");
+        }
+        if (!fs.existsSync("./music/packs")) {
+            fs.mkdirSync("./music/packs");
+        }
+        if (!fs.existsSync("./music/fanfares")) {
+            fs.mkdirSync("./music/fanfares");
+        }
+        if (!fs.existsSync("./music/bgm")) {
+            fs.mkdirSync("./music/bgm");
         }
     }
 
@@ -29,13 +55,10 @@ class OoT_MusicReplacementMod implements IPlugin {
     }
 
     init(): void {
-        let music_folder: string = path.resolve(global.ModLoader.startdir, "music");
-        this.searchRecursive(music_folder).forEach((file: string) => {
-            this.ModLoader.logger.info("Caching music track from folder: " + file + ".");
-            let buf: Buffer = fs.readFileSync(file);
-            let name: string = path.parse(file).name;
-            this.cache.set(name, buf);
-        });
+        this.current_option = "OoT_MusicReplacementMod-Randomize";
+        this.music_folder = path.resolve(global.ModLoader.startdir, "music");
+        this.packs = this.find_pack_names(this.music_folder + "/packs/");
+        this.load_random_music()
     }
 
     postinit(): void {
@@ -52,6 +75,116 @@ class OoT_MusicReplacementMod implements IPlugin {
                 this.ModLoader.emulator.rdramWrite32(0x80113750 + (i * 0x10), 0xFFFFFFFF);
             }
         }, 10);
+    }
+
+
+    get_random_item(current, array){
+        var random = array[Math.floor(Math.random()*array.length)]
+        if(!current.includes(random)){
+            return random;
+        }
+        else
+        {
+            return this.get_random_item(current, array);
+        }
+    }
+    shuffle(array) {
+        var currentIndex = array.length,  randomIndex;
+      
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+      
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+      
+          // And swap it with the current element.
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+      
+        return array;
+      }
+
+
+      load_random_music() {
+        this.cache = new Map<string, Buffer>();
+        var bgm_files = Array<string>();
+        var fanfare_files = Array<string>();
+        var picked_bgm = Array<string>();
+        var picked_fanfare = Array<string>();
+
+        this.searchRecursive(this.music_folder + "/bgm/").forEach((file: string) => {
+            this.ModLoader.logger.info("Finding BGM Songs: " + file + ".");
+            bgm_files.push(file);
+        });
+        this.searchRecursive(this.music_folder + "/fanfares/").forEach((file: string) => {
+            this.ModLoader.logger.info("Finding Fanfares: " + file + ".");
+            fanfare_files.push(file);
+        });
+
+        if (bgm_files.length > 0)
+        {
+            this.shuffle(bgm_files).every(file => {
+                if (picked_bgm.length === this.bgm.length){
+                    return false;
+                }
+                else
+                {
+                    this.ModLoader.logger.info("Caching song: " + file + ".");
+                    var random = this.get_random_item(picked_bgm, this.bgm);
+                    picked_bgm.push(random);
+                    let buf: Buffer = fs.readFileSync(file);
+                    this.cache.set(random, buf);
+                }
+                return true;
+            });
+        }
+        if (fanfare_files.length > 0)
+        {
+            this.shuffle(fanfare_files).every(file => {
+                if (picked_fanfare.length === this.fanfares.length){
+                    return false;
+                }
+                else
+                {
+                    this.ModLoader.logger.info("Caching fanfare: " + file + ".");
+                    var random = this.get_random_item(picked_fanfare, this.fanfares);
+                    picked_fanfare.push(random)
+                    let buf: Buffer = fs.readFileSync(file);
+                    this.cache.set(random, buf);
+                }
+                return true;
+            });
+        }
+    }
+    
+    load_pack_folder(dir: string) {
+        this.cache = new Map<string, Buffer>();
+        this.searchRecursive(dir).forEach((file: string) => {
+            this.ModLoader.logger.info("Caching music track from folder: " + file + ".");
+            let buf: Buffer = fs.readFileSync(file);
+            let name: string = path.parse(file).name;
+            this.cache.set(name, buf);
+        });
+    }
+
+    find_pack_names(dir: string): Array<string> {
+        let results = new Array<string>();
+        // Read contents of directory
+        fs.readdirSync(dir).forEach((dirInner) => {
+            // Obtain absolute path
+            dirInner = path.resolve(dir, dirInner);
+
+            // Get stats to determine if path is a directory or a file
+            var stat = fs.statSync(dirInner);
+
+            // If path is a directory, scan it and combine results
+            if (stat.isDirectory()) {
+                results.push(dirInner);
+            }
+        });
+        return results;
     }
 
     searchRecursive(dir: string): Array<string> {
@@ -101,32 +234,51 @@ class OoT_MusicReplacementMod implements IPlugin {
             }
 
             // Play new music
-            if ((!player.last_music_playing || player.last_music_id !== player.music_id) && player.is_og_playing) {
+            if ((!player.last_music_playing || player.last_music_id !== player.music_id) && player.is_og_playing || this.force_replay === true) {
                 if (player.music !== undefined) {
                     player.music.stop();
                     player.music.release();
                 }
+                this.force_replay = false;
 
                 this.cache.forEach((buf: Buffer, file: string) => {
-                    let fileSplits: string[] = path.parse(file).name.split('-');
-                    let id: number = parseInt(fileSplits[0].trim(), 16);
-
-                    // Check for file arguments in the file name
-                    if (id === player.music_id) {
-                        player.music = this.ModLoader.sound.initMusic(buf);
-
-                        if (fileSplits.length > 1) {
-                            if (fileSplits[1].trim() === "loop") {
+                    let update = false;
+                    if(this.current_option === "OoT_MusicReplacementMod-Randomize")
+                    {
+                        let id: number = parseInt(file.trim(), 16);
+                            
+                        // Check for file arguments in the file name
+                        if (id === player.music_id) {
+                            player.music = this.ModLoader.sound.initMusic(buf);
+                            update = true;
+                            if (this.bgm.includes(file)) {
                                 player.music.loop = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        let fileSplits: string[] = path.parse(file).name.split('-');
+                        let id: number = parseInt(fileSplits[0].trim(), 16);
+                            
+                        // Check for file arguments in the file name
+                        if (id === player.music_id) {
+                            player.music = this.ModLoader.sound.initMusic(buf);
+                            update = true;
+                            if (fileSplits.length > 1) {
+                                if (fileSplits[1].trim() === "loop") {
+                                    player.music.loop = true;
 
-                                if (fileSplits.length >= 4) {
-                                    player.loop_start = parseFloat(fileSplits[2].trim());
-                                    player.loop_end = parseFloat(fileSplits[3].trim());
-                                    player.SetLoopTimes(player.loop_start, player.loop_end);
+                                    if (fileSplits.length >= 4) {
+                                        player.loop_start = parseFloat(fileSplits[2].trim());
+                                        player.loop_end = parseFloat(fileSplits[3].trim());
+                                        player.SetLoopTimes(player.loop_start, player.loop_end);
+                                    }
                                 }
                             }
                         }
-
+                    }
+                    if (update === true) {
                         let vol = (global.ModLoader["GLOBAL_VOLUME"] as number) >= player.volume_og ? player.volume_og : global.ModLoader["GLOBAL_VOLUME"] as number;
                         player.music.volume = vol;
                         player.music.play();
@@ -142,6 +294,35 @@ class OoT_MusicReplacementMod implements IPlugin {
             player.last_music_id = player.music_id;
             player.last_music_playing = player.is_og_playing;
         });
+    }
+
+    @onViUpdate()
+    onViUpdate() {
+        if (this.ModLoader.ImGui.beginMainMenuBar()) {
+            if (this.ModLoader.ImGui.beginMenu("Mods")) {
+                if (this.ModLoader.ImGui.beginMenu("Music Replacement")) {
+                    if (this.ModLoader.ImGui.beginMenu("Music Paks")) {
+                        this.packs.forEach(pack_name => {
+                            if (this.ModLoader.ImGui.menuItem(path.basename(pack_name), undefined, ((this.current_option == path.basename(pack_name))? true:false))) {
+                                this.current_option = path.basename(pack_name);
+                                this.load_pack_folder(pack_name);
+                                this.force_replay = true;
+                            }
+                        });
+                        this.ModLoader.ImGui.endMenu();
+                    }
+                    if (this.ModLoader.ImGui.menuItem("Randomize Music", undefined, ((this.current_option == "OoT_MusicReplacementMod-Randomize")? true:false))) {
+                        this.current_option = "OoT_MusicReplacementMod-Randomize";
+                        this.force_replay = true;
+                        this.load_random_music()
+                    }
+                    this.ModLoader.ImGui.endMenu();
+                }
+                this.ModLoader.ImGui.endMenu();
+            }
+            this.ModLoader.ImGui.endMainMenuBar();
+        }
+
     }
 }
 
