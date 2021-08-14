@@ -27,6 +27,8 @@ Simply add your OGG, FLAC or WAV files inside the pack folder and make sure they
 
 - `loop` represents if the audio file should loop. Set it to `noloop` if you don't want the music to loop. Looping should be used for background music, while fanfares or ocarina songs should not be looping.
 
+- You can set what times the file loops at by specifying the start and the end in the following format `1A-loop-3000-10000.ogg` (Position-Loop-Start-End) (Time is in miliseconds)
+
 - `.ogg` is the file extension of your audio file and can be different. You shouldn't touch it at all when renaming your file.
 
 ### .OGG is recommended! .MP3 files are not supported!

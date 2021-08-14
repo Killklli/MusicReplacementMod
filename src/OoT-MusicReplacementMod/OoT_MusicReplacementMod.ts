@@ -24,6 +24,7 @@ class OoT_MusicReplacementMod implements IPlugin {
     sequencePlayers!: SequencePlayer[];
     config!: OoTMusicReplacement_Config;
     music_folder!: string;
+    loaded_pak: boolean = false;
     cache: Map<string, Buffer> = new Map<string, Buffer>();
     packs: Array<string> = new Array<string>();
     // Create arrays for checking if we already have audio assigned to sections
@@ -57,19 +58,22 @@ class OoT_MusicReplacementMod implements IPlugin {
     onTrack(track: MusicReplacementTrack) {
         this.ModLoader.logger.info("Caching music track from API: " + track.name + ".");
         this.cache.set(track.name, track.content);
+        this.loaded_pak = true;
     }
 
     init(): void {
         this.config = this.ModLoader.config.registerConfigCategory("OoT_MusicReplacementMod") as OoTMusicReplacement_Config;
-        this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", false);
-        this.music_folder = path.resolve(global.ModLoader.startdir, "music");
-        this.packs = this.find_pack_names(this.music_folder + "/packs/");
-        // If we have a pack already set, load that as the default rather than rando
-        if (this.config.current_option !== "OoT_MusicReplacementMod-Randomize") {
-            this.load_pack_folder(this.config.current_option);
-        }
-        else {
-            this.load_random_music();
+        if (this.loaded_pak == false) {
+            this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", false);
+            this.music_folder = path.resolve(global.ModLoader.startdir, "music");
+            this.packs = this.find_pack_names(this.music_folder + "/packs/");
+            // If we have a pack already set, load that as the default rather than rando
+            if (this.config.current_option !== "OoT_MusicReplacementMod-Randomize") {
+                this.load_pack_folder(this.config.current_option);
+            }
+            else {
+                this.load_random_music();
+            }
         }
     }
 
@@ -225,6 +229,7 @@ class OoT_MusicReplacementMod implements IPlugin {
 
     onTick(frame?: number | undefined): void {
         this.sequencePlayers.forEach(player => {
+            this.ModLoader.logger.info(String(player.music_id));
             // Only change volume if the OG song is actually playing
             if (player.music !== undefined && player.last_music_playing && player.last_music_id === player.music_id) {
                 // Set volume to the same as in-game
@@ -309,22 +314,29 @@ class OoT_MusicReplacementMod implements IPlugin {
         if (this.ModLoader.ImGui.beginMainMenuBar()) {
             if (this.ModLoader.ImGui.beginMenu("Mods")) {
                 if (this.ModLoader.ImGui.beginMenu("Music Replacement")) {
-                    if (this.ModLoader.ImGui.beginMenu("Music Paks")) {
-                        this.packs.forEach(pack_name => {
-                            if (this.ModLoader.ImGui.menuItem(path.basename(pack_name), undefined, ((this.config.current_option == pack_name) ? true : false))) {
-                                this.load_pack_folder(pack_name);
-                                this.force_replay = true;
-                                this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", pack_name, true);
-                                this.ModLoader.config.save();
-                            }
-                        });
-                        this.ModLoader.ImGui.endMenu();
+
+                    if (this.loaded_pak == true) {
+                        this.ModLoader.ImGui.menuItem("Music Pak loaded from API", undefined, true);
                     }
-                    if (this.ModLoader.ImGui.menuItem("Randomize Music", undefined, ((this.config.current_option == "OoT_MusicReplacementMod-Randomize") ? true : false))) {
-                        this.load_random_music()
-                        this.force_replay = true;
-                        this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", true);
-                        this.ModLoader.config.save();
+                    else {
+                        if (this.ModLoader.ImGui.beginMenu("Music Paks")) {
+                            this.packs.forEach(pack_name => {
+                                if (this.ModLoader.ImGui.menuItem(path.basename(pack_name), undefined, ((this.config.current_option == pack_name) ? true : false))) {
+                                    this.load_pack_folder(pack_name);
+                                    this.force_replay = true;
+                                    this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", pack_name, true);
+                                    this.ModLoader.config.save();
+                                }
+                            });
+                            this.ModLoader.ImGui.endMenu();
+                        }
+                        if (this.ModLoader.ImGui.menuItem("Randomize Music", undefined, ((this.config.current_option == "OoT_MusicReplacementMod-Randomize") ? true : false))) {
+                            this.load_random_music()
+                            this.force_replay = true;
+                            this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", true);
+                            this.ModLoader.config.save();
+                        }
+                        this.ModLoader.ImGui.endMenu();
                     }
                     this.ModLoader.ImGui.endMenu();
                 }
