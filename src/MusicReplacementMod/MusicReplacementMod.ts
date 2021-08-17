@@ -26,7 +26,7 @@ class OoT_MusicReplacementMod implements IPlugin {
     music_folder!: string;
     loaded_pak: boolean = false;
     cache: Map<string, Buffer> = new Map<string, Buffer>();
-    packs: Array<string> = new Array<string>();
+    collections: Array<string> = new Array<string>();
     // Create arrays for checking if we already have audio assigned to sections
     bgm: Array<string> = []
     fanfares: Array<string> = []
@@ -65,8 +65,8 @@ class OoT_MusicReplacementMod implements IPlugin {
         if (!fs.existsSync("./music")) {
             fs.mkdirSync("./music");
         }
-        if (!fs.existsSync("./music/packs")) {
-            fs.mkdirSync("./music/packs");
+        if (!fs.existsSync("./music/collections")) {
+            fs.mkdirSync("./music/collections");
         }
         if (!fs.existsSync("./music/fanfares")) {
             fs.mkdirSync("./music/fanfares");
@@ -88,7 +88,7 @@ class OoT_MusicReplacementMod implements IPlugin {
         if (this.loaded_pak == false) {
             this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", false);
             this.music_folder = path.resolve(global.ModLoader.startdir, "music");
-            this.packs = this.find_pack_names(this.music_folder + "/packs/");
+            this.collections = this.find_pack_names(this.music_folder + "/collections/");
             if (this.ModLoader.isModLoaded("OcarinaofTime") == true) {
                 this.fanfares = this.oot_fanfares;
                 this.bgm = this.oot_bgm;
@@ -368,7 +368,7 @@ class OoT_MusicReplacementMod implements IPlugin {
                     }
                     else {
                         if (this.ModLoader.ImGui.beginMenu("Music Paks")) {
-                            this.packs.forEach(pack_name => {
+                            this.collections.forEach(pack_name => {
                                 if (this.ModLoader.ImGui.menuItem(path.basename(pack_name), undefined, ((this.config.current_option == pack_name) ? true : false))) {
                                     this.load_pack_folder(pack_name);
                                     this.force_replay = true;

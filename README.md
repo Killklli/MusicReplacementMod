@@ -2,11 +2,13 @@
 
 This mod allows some music in Ocarina of Time to be replaced with external audio files.
 
+Once you've loaded your music/collections you can select them from in game under the `mods -> Music Replacement` tab
+
 ## Usage
 
 Place the pak file in your `mods` folder and enable the mod in the launcher. On first launch it will create a `music` folder at `./ModLoader/music`.
 
-Within that folder it will have `packs`, `bgm` and `fanfares`. 
+Within that folder it will have `collections`, `bgm` and `fanfares`. 
 
 ### BGM and Fanfares can accept any file name and when the random option is selected in the mods section, it will randomly pick from the files in the folder.
 
@@ -14,13 +16,15 @@ Eg: `./ModLoader/music/bgm/my-random-song.ogg`
 and
 `./ModLoader/music/bgm/random_fanfare.ogg`
 
-### Packs can be loaded in with specific songs tying to specific locations in game. (designated below)
+### collections can be loaded in with specific songs tying to specific locations in game. (designated below)
 
-You can have multiple packs by naming the folders as
+You can have multiple collections by naming the folders as
 
-`./ModLoader/music/packs/PACK_NAME/`
+`./ModLoader/music/collections/COLLECTION_NAME/`
 
-Simply add your OGG, FLAC or WAV files inside the pack folder and make sure they are named as follows:
+While replacing `COLLECTION_NAME` with what you want your collection to be named.
+
+Simply add your OGG, FLAC or WAV files inside the collection folder and make sure they are named as follows:
 `1A-loop.ogg`
 
 - `1A` represents the music ID from the game you want to replace with this audio file. A list of music IDs from Ocarina of Time can be found at: https://wiki.cloudmodding.com/oot/Music_Sequences
