@@ -35,6 +35,8 @@ Simply add your OGG, FLAC or WAV files inside the pack folder and make sure they
 
 # Here are a list of all the supported music IDs.
 
+## OoT
+
 Filename | Track Name
 ------------ | -------------
 02 | Hyrule Field
@@ -116,3 +118,133 @@ Filename | Track Name
 6A | End Credits IV
 6B | King Dodongo & Volvagia Boss Battle
 6C | Mini-Game
+
+
+## MM
+Filename | Track Name
+------------ | -------------
+2 | Termina Field
+3 | Forest Chase
+4 | Majora's Theme
+5 | The Clock Tower
+6 | Stone Tower Temple
+7 | Stone Tower Temple Inverted
+8 | Missed Event 1
+9 | Title
+10 | Mask Salesman
+11 | Song of Healing
+12 | Southern Swamp
+13 | Ghost Attack
+14 | Mini Game
+15 | Sharp's Curse
+16 | Great Bay Coast
+17 | Ikana Valley
+18 | Court of the Deku King
+19 | Mountain Village
+20 | Pirates' Fortress
+21 | Clock Town Day 1
+22 | Clock Town Day 2
+23 | Clock Town Day 3
+24 | [File Select]
+25 | Event Clear
+26 | Battle
+27 | Boss Battle
+28 | Woodfall Temple
+29 | Clock Town Day 1
+30 | Forest Ambush
+31 | House
+32 | Game Over
+33 | Boss Clear
+34 | Item Catch
+35 | Clock Town Day 2
+36 | Complete a Heart Piece
+37 | Playing Minigame
+38 | Goron Race
+39 | Music Box House
+40 | Fairy's Fountain
+41 | Zelda's Lullaby
+42 | Rosa Sisters' Dance
+43 | Open Chest
+44 | Marine Research Laboratory
+45 | The Four Giants
+46 | Guru-Guru's Song
+47 | Romani Ranch
+48 | Goron Village
+49 | Mayor Dotour
+50 | Ocarina Epona's Song
+51 | Ocarina Sun's Song
+52 | Ocarina Song of Time
+53 | Ocarina Song of Storms
+54 | Zora Hall
+55 | A New Mask
+56 | Mini Boss
+57 | Small Item Catch
+58 | Astral Observatory
+59 | Clock Town Cavern
+60 | Milk Bar Latte
+61 | Meet Zelda (OoT)
+62 | Woods of Mystery
+63 | Goron Race Goal
+64 | Gorman Race
+65 | Race Finish
+66 | Gorman Bros.
+67 | Kotake's Potion Shop
+68 | Store
+69 | Gaebora's Theme
+70 | Target Practice
+71 | Ocarina Song of Soaring
+72 | Ocarina Song of Healing
+73 | Inverted Song of Time
+74 | Song of Double Time
+75 | Sonata of Awakening
+76 | Goron Lullaby
+77 | New Wave Bossa Nova
+78 | Elegy of Emptiness
+79 | Oath to Order
+80 | Sword Training
+81 | Ocarina Goron Lullaby Intro
+82 | New Song
+83 | Bremen March
+84 | Ballad of the Wind Fish
+85 | Song of Soaring
+86 | Milk Bar Latte
+87 | Final Hours
+88 | Mikau's Tale
+89 | Mikau's Fin
+90 | Don Gero's Song
+91 | Ocarina Sonata of Awakening
+92 | Ocarina Goron Lullaby
+93 | Ocarina New Wave Bossa Nova
+94 | Ocarina Elegy of Emptiness
+95 | Ocarina Oath to Order
+96 | Last Dungeon
+97 | OCA Lullaby Half
+98 | Bass and Guitar Session
+99 | Piano Solo
+100 | The Indigo-Go's Rehearsal
+101 | Snowhead Temple
+102 | Great Bay Temple
+103 | Demo Sax
+104 | Demo Vocal
+105 | Majora's Wrath
+106 | Majora's Incarnation
+107 | Majora's Mask Battle
+108 | Bass Practice
+109 | Drums Practice
+110 | Piano Practice
+111 | Ikana Castle
+112 | Calling the Four Giants
+113 | Kamaro's Dance
+114 | Cremia's Carriage
+115 | Keaton
+116 | The End/Credits I
+117 | Forest Ambush (?)
+118 | Title Screen
+119 | Surfacing of Woodfall
+120 | Woodfall Clear
+121 | Snowhead Clear
+123 | To the Moon
+124 | Goodbye Giants
+125 | Tatl and Tael
+126 | Moon's Destruction
+130 | The End/Credits II

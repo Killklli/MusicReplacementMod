@@ -28,16 +28,38 @@ class OoT_MusicReplacementMod implements IPlugin {
     cache: Map<string, Buffer> = new Map<string, Buffer>();
     packs: Array<string> = new Array<string>();
     // Create arrays for checking if we already have audio assigned to sections
-    bgm: Array<string> = ["02", "18", "19", "1A", "1B", "1C", "1D", "1E",
+    bgm: Array<string> = []
+    fanfares: Array<string> = []
+    oot_bgm: Array<string> = ["02", "18", "19", "1A", "1B", "1C", "1D", "1E",
         "1F", "26", "27", "28", "29", "2A", "2C", "2D", "2E",
         "2F", "30", "38", "3A", "3C", "3E", "3F", "40", "42",
         "4A", "4B", "4C", "4D", "4E", "4F", "50", "54", "55",
         "56", "57", "58", "5A", "5B", "5C", "5F", "60", "61",
         "62", "63", "64", "65", "67", "68", "69", "6A", "6B",
         "6C", "51", "52", "66"];
-    fanfares: Array<string> = ["20", "21", "22", "23", "24", "25", "2B",
+    oot_fanfares: Array<string> = ["20", "21", "22", "23", "24", "25", "2B",
         "32", "33", "34", "35", "36", "37", "39", "3B", "3D",
         "41", "43", "53", "59", "5E"]
+
+    mm_bgm: Array<string> = ["2", "3", "4", "5", "6", "7", "9", "10",
+        "12", "13", "14", "15", "16", "17", "18", "19",
+        "20", "21", "22", "23", "24", "26", "27", "28",
+        "29", "30", "31", "35", "37", "38", "39", "40",
+        "41", "42", "44", "45", "46", "47", "48", "49",
+        "54", "56", "58", "59", "60", "61", "62", "64",
+        "66", "67", "68", "69", "70", "80", "82", "83",
+        "84", "85", "86", "87", "88", "96", "98", "99",
+        "100", "101", "102", "103", "104", "105", "106",
+        "107", "108", "109", "110", "111", "112", "113",
+        "114", "115", "116", "117", "118", "124", "125",
+        "126", "130",];
+
+    mm_fanfares: Array<string> = ["8", "11", "25", "32", "33", "34", "36", "43",
+        "50", "51", "52", "53", "55", "57", "63",
+        "65", "71", "72", "73", "74", "75", "76",
+        "77", "78", "79", "81", "89", "90", "91",
+        "92", "93", "94", "95", "97", "119", "120",
+        "121", "123",]
 
     preinit(): void {
         if (!fs.existsSync("./music")) {
@@ -67,6 +89,14 @@ class OoT_MusicReplacementMod implements IPlugin {
             this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", false);
             this.music_folder = path.resolve(global.ModLoader.startdir, "music");
             this.packs = this.find_pack_names(this.music_folder + "/packs/");
+            if (this.ModLoader.isModLoaded("OcarinaofTime") == true) {
+                this.fanfares = this.oot_fanfares;
+                this.bgm = this.oot_bgm;
+            }
+            else {
+                this.fanfares = this.mm_fanfares;
+                this.bgm = this.mm_bgm;
+            }
             // If we have a pack already set, load that as the default rather than rando
             if (this.config.current_option !== "OoT_MusicReplacementMod-Randomize") {
                 this.load_pack_folder(this.config.current_option);
@@ -80,17 +110,27 @@ class OoT_MusicReplacementMod implements IPlugin {
     postinit(): void {
         // Create emulated sequence players
         this.sequencePlayers = new Array<SequencePlayer>(3);
-        this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128B60));
-        this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128CC0));
-        //this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128E20));
-        this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128F80));
-
-        //Mute OG Music
-        this.ModLoader.utils.setIntervalFrames(() => {
-            for (let i = 0x3; i < 0x26; i++) {
-                this.ModLoader.emulator.rdramWrite32(0x80113750 + (i * 0x10), 0xFFFFFFFF);
-            }
-        }, 10);
+        if (this.ModLoader.isModLoaded("OcarinaofTime") == true) {
+            this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128B60));
+            this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128CC0));
+            //this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128E20));
+            this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x80128F80));
+            //Mute OG Music
+            this.ModLoader.utils.setIntervalFrames(() => {
+                for (let i = 0x3; i < 0x26; i++) {
+                    this.ModLoader.emulator.rdramWrite32(0x80113750 + (i * 0x10), 0xFFFFFFFF);
+                }
+            }, 10);
+        }
+        else {
+            this.sequencePlayers.push(new SequencePlayer(this.ModLoader.emulator, 0x802050D0));
+            this.ModLoader.utils.setIntervalFrames(() => {
+                this.ModLoader.emulator.rdramWrite8(0x802050DF, 0x80);
+                this.ModLoader.emulator.rdramWrite8(0x802050D5, 0x80);
+                this.ModLoader.emulator.rdramWrite32(0x802050E0, 0x00000000);
+                this.ModLoader.emulator.rdramWrite32(0x802050F0, 0x00000000);
+            }, 10);
+        }
     }
 
     get_random_item(current: Array<string>, array: Array<string>): string {
@@ -229,7 +269,15 @@ class OoT_MusicReplacementMod implements IPlugin {
 
     onTick(frame?: number | undefined): void {
         this.sequencePlayers.forEach(player => {
-            this.ModLoader.logger.info(String(player.music_id));
+            // if (player.last_music_id != player.music_id) {
+            //     this.ModLoader.logger.info(String(player.music_id));
+            //     this.ModLoader.logger.info(String(player.volume_og));
+            //     this.ModLoader.logger.info(String(player.is_muted));
+            // }
+            if (this.ModLoader.isModLoaded("MajorasMask") == true) {
+                this.ModLoader.emulator.rdramWrite8(0x802050DF, 0x80);
+                this.ModLoader.emulator.rdramWrite8(0x802050D5, 0x80);
+            }
             // Only change volume if the OG song is actually playing
             if (player.music !== undefined && player.last_music_playing && player.last_music_id === player.music_id) {
                 // Set volume to the same as in-game
@@ -336,7 +384,6 @@ class OoT_MusicReplacementMod implements IPlugin {
                             this.ModLoader.config.setData("OoT_MusicReplacementMod", "current_option", "OoT_MusicReplacementMod-Randomize", true);
                             this.ModLoader.config.save();
                         }
-                        this.ModLoader.ImGui.endMenu();
                     }
                     this.ModLoader.ImGui.endMenu();
                 }

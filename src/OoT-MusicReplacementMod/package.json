@@ -10,5 +10,6 @@
   "author": "MelonSpeedruns",
   "credits": "Asra, Willeyd and Jam for testing!",
   "license": "ISC",
+  "core": ["OcarinaofTime", "MajorasMask"],
   "modloader64_deps": {}
 }
