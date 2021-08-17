@@ -1,8 +1,8 @@
 {
-    "name": "OoT_MusicReplacementTemplate",
+    "name": "MusicReplacementTemplate",
     "version": "1.0.0",
     "description": "",
-    "main": "OoT_MusicReplacementTemplate.js",
+    "main": "MusicReplacementTemplate.js",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -10,7 +10,7 @@
     "author": "",
     "credits": "",
     "license": "ISC",
-    "core": "OcarinaofTime",
+    "core": ["OcarinaofTime", "MajorasMask"],
     "modloader64_deps": {}
   }
   
